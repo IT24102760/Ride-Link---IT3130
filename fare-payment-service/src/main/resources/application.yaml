@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: fare-payment-service
+
+  data:
+    mongodb:
+      url: ${MONGODB_URI:mongodb://localhost:27017/ridelink_payment_db}
+
+server:
+  port: 8084
