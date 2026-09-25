@@ -1,0 +1,27 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: ride-service
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://localhost:27017/ridelink_rides}
+  data:
+    mongodb:
+      auto-index-creation: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+  internal:
+    service-key: ${INTERNAL_SERVICE_KEY}
+
+services:
+  driver:
+    url: ${DRIVER_SERVICE_URL:http://localhost:8082}
+  fare:
+    url: ${FARE_SERVICE_URL:http://localhost:8084}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
