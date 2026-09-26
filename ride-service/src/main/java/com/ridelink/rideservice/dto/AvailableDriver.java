@@ -1,4 +1,8 @@
 package com.ridelink.rideservice.dto;
 
-public class AvailableDriver {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+// One driver returned by GET /api/drivers/available (we only need these two ids)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record AvailableDriver(String driverId, String accountId) {
 }

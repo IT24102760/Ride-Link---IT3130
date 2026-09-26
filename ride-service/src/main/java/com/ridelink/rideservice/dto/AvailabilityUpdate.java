@@ -1,4 +1,5 @@
 package com.ridelink.rideservice.dto;
 
-public class AvailabilityUpdate {
+// Body sent to the Driver service to set a driver BUSY or AVAILABLE
+public record AvailabilityUpdate(String status) {
 }
