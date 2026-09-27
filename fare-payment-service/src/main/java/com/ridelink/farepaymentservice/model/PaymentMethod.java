@@ -1,4 +1,7 @@
 package com.ridelink.farepaymentservice.model;
 
-public class PaymentMethod {
+public enum PaymentMethod {
+    CARD,
+    CASH,
+    MOBILE
 }
