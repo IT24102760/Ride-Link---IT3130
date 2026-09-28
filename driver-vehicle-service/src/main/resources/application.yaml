@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: driver-vehicle-service
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ridelink_drivers
+
+server:
+  port: 8082
+
+jwt:
+  secret: ${JWT_SECRET}
+
+internal:
+  service-key: ${INTERNAL_SERVICE_KEY}
