@@ -7,6 +7,7 @@ import com.ridelink.rideservice.service.RideService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,6 +37,15 @@ public class RideController {
         return rideService.requestRide(jwt.getSubject(), request);
     }
 
+    @Operation(summary = "Find an available driver in the pickup area and assign them")
+    @PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
+    @PostMapping("/{rideId}/assign")
+    public RideResponse assignDriver(@AuthenticationPrincipal Jwt jwt, @PathVariable String rideId,
+                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+        // the passenger's token is forwarded to the Driver service
+        return rideService.assignDriver(rideId, jwt.getSubject(), role(jwt), authorization);
+    }
+
     @Operation(summary = "Assigned driver accepts the ride")
     @PreAuthorize("hasRole('DRIVER')")
     @PostMapping("/{rideId}/accept")
@@ -48,6 +58,13 @@ public class RideController {
     @PostMapping("/{rideId}/start")
     public RideResponse startRide(@AuthenticationPrincipal Jwt jwt, @PathVariable String rideId) {
         return rideService.startRide(rideId, jwt.getSubject());
+    }
+
+    @Operation(summary = "Assigned driver completes the trip; the final fare is created")
+    @PreAuthorize("hasRole('DRIVER')")
+    @PostMapping("/{rideId}/complete")
+    public RideResponse completeRide(@AuthenticationPrincipal Jwt jwt, @PathVariable String rideId) {
+        return rideService.completeRide(rideId, jwt.getSubject());
     }
 
     @Operation(summary = "Cancel a ride before the trip starts")
