@@ -1,4 +1,14 @@
 package com.ridelink.farepaymentservice.dto;
 
-public class PayRequest {
+import com.ridelink.farepaymentservice.model.PaymentMethod;
+import jakarta.validation.constraints.NotNull;
+
+public record PayRequest(
+
+        @NotNull(message = "Payment method is required")
+        PaymentMethod paymentMethod,
+
+        String simulateOutcome
+
+) {
 }
