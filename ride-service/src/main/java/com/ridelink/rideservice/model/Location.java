@@ -1,11 +1,12 @@
 package com.ridelink.rideservice.model;
 
-import jakarta.validation.constraints.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-// A pickup or destination point (simulated location)
+// A pickup or destination place. Coordinates are looked up by the Fare service.
+@Schema(description = "A pickup or destination place (place name only)")
 public record Location(
-        @NotBlank String placeName,                                  // e.g. "Negombo", also used as service area
-        @NotNull @DecimalMin("-90.0") @DecimalMax("90.0") Double latitude,
-        @NotNull @DecimalMin("-180.0") @DecimalMax("180.0") Double longitude) {
+        @Schema(description = "Place name, also used as the driver's service area", example = "Negombo")
+        @NotBlank @Size(max = 60) String placeName) {
 }
-
