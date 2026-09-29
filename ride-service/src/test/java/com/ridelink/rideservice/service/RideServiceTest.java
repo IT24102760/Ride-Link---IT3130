@@ -30,8 +30,8 @@ class RideServiceTest {
 
     private static final String PASSENGER = "passenger-1";
     private static final String DRIVER = "driver-account-1";
-    private static final Location NEGOMBO = new Location("Negombo", 7.2083, 79.8358);
-    private static final Location COLOMBO = new Location("Colombo", 6.9271, 79.8612);
+    private static final Location NEGOMBO = new Location("Negombo");
+    private static final Location COLOMBO = new Location("Colombo");
 
     // Builds a test ride in the given status (with a driver once assigned)
     private Ride ride(RideStatus status) {
