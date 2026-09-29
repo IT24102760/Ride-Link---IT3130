@@ -6,30 +6,15 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+// CONTRACT with the Ride service: body of POST /internal/payments when a ride is completed
 public record CreatePaymentRequest(
-
-        @NotBlank(message = "Ride ID is required")
-        String rideId,
-
-        @NotBlank(message = "Passenger ID is required")
-        String passengerId,
-
-        @NotBlank(message = "Driver ID is required")
-        String driverId,
-
-        @NotNull(message = "Vehicle type is required")
-        VehicleType vehicleType,
-
-        @Valid
-        @NotNull(message = "Pickup location is required")
-        Location pickup,
-
-        @Valid
-        @NotNull(message = "Destination location is required")
-        Location destination,
-
-        @Min(value = 1, message = "Trip minutes must be at least 1")
-        long tripMinutes
-
-) {
+        @NotBlank String rideId,
+        @NotBlank String passengerId,       // passenger's account id
+        @NotBlank String driverId,          // driver profile id
+        @NotBlank String driverAccountId,   // driver's account id (for cash confirmation)
+        @NotNull VehicleType vehicleType,
+        @NotNull @Valid Location pickup,
+        @NotNull @Valid Location destination,
+        @Min(1) long tripMinutes) {
 }
+
