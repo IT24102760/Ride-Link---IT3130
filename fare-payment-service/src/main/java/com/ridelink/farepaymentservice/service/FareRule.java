@@ -1,42 +1,33 @@
 package com.ridelink.farepaymentservice.service;
 
 import com.ridelink.farepaymentservice.model.VehicleType;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-@Component
-public class FareRule {
+// DOCUMENTED FARE RULE (all amounts in LKR)
+//   distance = straight-line distance between the two places x 1.3 (road factor)
+//   fare     = base fare + (distance x per-km rate) + (trip minutes x per-minute rate)
+//   the fare is never lower than the minimum fare, and is rounded to 2 decimals
+//
+//             base    per km   per minute   minimum
+//   BIKE      100      40         2           120
+//   TUK       150      50         3           180
+//   CAR       200      70         4           250
+public record FareRule(BigDecimal baseFare, BigDecimal perKm, BigDecimal perMinute, BigDecimal minimumFare) {
 
-    public BigDecimal getBaseFare(VehicleType vehicleType) {
-        return switch (vehicleType) {
-            case BIKE -> new BigDecimal("100.00");
-            case TUK -> new BigDecimal("150.00");
-            case CAR -> new BigDecimal("200.00");
+    public static final double ROAD_FACTOR = 1.3;          // roads are longer than a straight line
+    public static final double AVERAGE_SPEED_KMH = 30.0;   // used to estimate trip minutes
+
+    public static FareRule forVehicle(VehicleType type) {
+        return switch (type) {
+            case BIKE -> of("100", "40", "2", "120");
+            case TUK  -> of("150", "50", "3", "180");
+            case CAR  -> of("200", "70", "4", "250");
         };
     }
 
-    public BigDecimal getPerKmRate(VehicleType vehicleType) {
-        return switch (vehicleType) {
-            case BIKE -> new BigDecimal("40.00");
-            case TUK -> new BigDecimal("50.00");
-            case CAR -> new BigDecimal("70.00");
-        };
-    }
-
-    public BigDecimal getPerMinuteRate(VehicleType vehicleType) {
-        return switch (vehicleType) {
-            case BIKE -> new BigDecimal("2.00");
-            case TUK -> new BigDecimal("3.00");
-            case CAR -> new BigDecimal("4.00");
-        };
-    }
-
-    public BigDecimal getMinimumFare(VehicleType vehicleType) {
-        return switch (vehicleType) {
-            case BIKE -> new BigDecimal("120.00");
-            case TUK -> new BigDecimal("180.00");
-            case CAR -> new BigDecimal("250.00");
-        };
+    private static FareRule of(String base, String perKm, String perMinute, String minimum) {
+        return new FareRule(new BigDecimal(base), new BigDecimal(perKm),
+                new BigDecimal(perMinute), new BigDecimal(minimum));
     }
 }
