@@ -1,12 +1,9 @@
 package com.ridelink.farepaymentservice.exception;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.Map;
 
-public record ApiError(
-        LocalDateTime timestamp,
-        int status,
-        String error,
-        String message,
-        String path
-) {
+// The JSON body returned for every error (same shape in all services)
+public record ApiError(Instant timestamp, int status, String error, String message,
+                       String path, Map<String, String> fieldErrors) {
 }
