@@ -1,16 +1,22 @@
-spring:
-  application:
-    name: driver-vehicle-service
-
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/ridelink_drivers
-
 server:
   port: 8082
 
-jwt:
-  secret: ${JWT_SECRET}
+spring:
+  application:
+    name: driver-vehicle-service
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://localhost:27017/ridelink_drivers}
+  data:
+    mongodb:
+      auto-index-creation: true    # makes the unique accountId / plate indexes work
 
-internal:
-  service-key: ${INTERNAL_SERVICE_KEY}
+app:
+  jwt:
+    secret: ${JWT_SECRET}                        # same secret as every other service
+  internal:
+    service-key: ${INTERNAL_SERVICE_KEY}         # checked on /internal/** (calls from Ride)
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
