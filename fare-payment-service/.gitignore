@@ -1,0 +1,11 @@
+
+.idea\.gitignore
+.idea\misc.xml
+.idea\modules.xml
+.idea\Ride-Link---IT3130.iml
+.idea\vcs.xml
+.idea/
+*.iml
+target/
+HELP.md
+local.env
