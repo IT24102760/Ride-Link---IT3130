@@ -48,8 +48,24 @@ public class RideService {
         return RideResponse.from(rideRepository.save(ride));
     }
 
-    // Find an available driver in the pickup area and assign them -> ASSIGNED
+    // Lists the drivers the passenger can choose from (asked from the Driver service, never stored here)
+    public List<AvailableDriver> findDriversForRide(String rideId, String callerId, String callerRole, String bearerToken) {
+        Ride ride = findRide(rideId);
+        if (!isPassenger(ride, callerId) && !isAdmin(callerRole)) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "Only the passenger who requested this ride can see its drivers");
+        }
+        requireTransition(ride, RideStatus.ASSIGNED);   // only while the ride is REQUESTED
+        return driverClient.findAvailableDrivers(ride.getPickup().placeName(), ride.getVehicleType(), bearerToken);
+    }
+
+    // Assign the longest-waiting available driver -> ASSIGNED
     public RideResponse assignDriver(String rideId, String callerId, String callerRole, String bearerToken) {
+        return assignDriver(rideId, callerId, callerRole, bearerToken, null);
+    }
+
+    // Assign the driver the passenger chose, or the longest-waiting one if none was chosen -> ASSIGNED
+    public RideResponse assignDriver(String rideId, String callerId, String callerRole, String bearerToken,
+                                     String chosenDriverId) {
         Ride ride = findRide(rideId);
         if (!isPassenger(ride, callerId) && !isAdmin(callerRole)) {
             throw new ApiException(HttpStatus.FORBIDDEN, "Only the passenger who requested this ride can assign a driver");
@@ -63,6 +79,17 @@ public class RideService {
                     "No available " + ride.getVehicleType() + " driver in " + area);
         }
 
+        // The passenger picked a driver: it must be in the list, and there is no fallback to others
+        if (chosenDriverId != null && !chosenDriverId.isBlank()) {
+            AvailableDriver chosen = drivers.stream()
+                    .filter(d -> chosenDriverId.equals(d.driverId()))
+                    .findFirst()
+                    .orElseThrow(() -> new ApiException(HttpStatus.CONFLICT,
+                            "That driver is not available for this ride; choose another"));
+            driverClient.setAvailability(chosen.driverId(), "BUSY");   // 409 here means someone else got them
+            return saveAssignment(ride, chosen);
+        }
+
         // Documented rule: take the first available driver; if another ride
         // grabbed them at the same moment (409), try the next one
         for (AvailableDriver driver : drivers) {
@@ -74,10 +101,7 @@ public class RideService {
                 }
                 throw ex;       // 502 / 503: stop, the ride stays REQUESTED
             }
-            ride.setDriverId(driver.driverId());
-            ride.setDriverAccountId(driver.accountId());
-            ride.setStatus(RideStatus.ASSIGNED);
-            return RideResponse.from(rideRepository.save(ride));
+            return saveAssignment(ride, driver);
         }
         throw new ApiException(HttpStatus.CONFLICT, "All available drivers were just taken, please try again");
     }
@@ -155,6 +179,14 @@ public class RideService {
     private Ride findRide(String rideId) {
         return rideRepository.findById(rideId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Ride not found"));
+    }
+
+    // Records the driver on the ride and moves it to ASSIGNED
+    private RideResponse saveAssignment(Ride ride, AvailableDriver driver) {
+        ride.setDriverId(driver.driverId());
+        ride.setDriverAccountId(driver.accountId());
+        ride.setStatus(RideStatus.ASSIGNED);
+        return RideResponse.from(rideRepository.save(ride));
     }
 
     // Checks the lifecycle rules in RideStatus; invalid moves give 409

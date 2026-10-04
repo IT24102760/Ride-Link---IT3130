@@ -1,5 +1,7 @@
 package com.ridelink.rideservice.controller;
 
+import com.ridelink.rideservice.dto.AssignDriverRequest;
+import com.ridelink.rideservice.dto.AvailableDriver;
 import com.ridelink.rideservice.dto.CancelRideRequest;
 import com.ridelink.rideservice.dto.CreateRideRequest;
 import com.ridelink.rideservice.dto.RideResponse;
@@ -48,21 +50,45 @@ public class RideController {
     }
 
     @Tag(name = "1. Passenger")
-    @Operation(summary = "Find and assign an available driver",
-            description = "Step 2. The Ride service asks the Driver service for an AVAILABLE driver "
-                    + "in the pickup area with the right vehicle type, marks them BUSY and assigns them.")
+    @Operation(summary = "See the available drivers for my ride",
+            description = "Optional step 2a. The Ride service asks the Driver service for the ONLINE drivers "
+                    + "in the pickup area with the right vehicle type, longest-waiting first. "
+                    + "Pick one and send its driverId to the assign step.")
+    @ApiResponse(responseCode = "200", description = "The available drivers (may be empty)")
+    @ApiResponse(responseCode = "403", description = "Only the passenger who requested this ride can see its drivers")
+    @ApiResponse(responseCode = "409", description = "The ride is not REQUESTED")
+    @ApiResponse(responseCode = "503", description = "Driver service is unavailable")
+    @PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
+    @GetMapping("/{rideId}/drivers")
+    public List<AvailableDriver> availableDrivers(@AuthenticationPrincipal Jwt jwt,
+                                                  @Parameter(description = "The ride's id") @PathVariable String rideId,
+                                                  @Parameter(hidden = true)
+                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+        // the passenger's token is forwarded to the Driver service
+        return rideService.findDriversForRide(rideId, jwt.getSubject(), role(jwt), authorization);
+    }
+
+    @Tag(name = "1. Passenger")
+    @Operation(summary = "Assign a driver (my choice, or the longest-waiting one)",
+            description = "Step 2. Send a body with a driverId (from the drivers list) to choose that driver, "
+                    + "or send no body to get the longest-waiting AVAILABLE driver in the pickup area. "
+                    + "The driver is marked BUSY and assigned to the ride.")
     @ApiResponse(responseCode = "200", description = "Driver assigned (ASSIGNED)")
     @ApiResponse(responseCode = "403", description = "Only the passenger who requested this ride can assign a driver")
-    @ApiResponse(responseCode = "409", description = "No available driver, or the ride is not REQUESTED")
+    @ApiResponse(responseCode = "409",
+            description = "No available driver, the chosen driver is not available, or the ride is not REQUESTED")
     @ApiResponse(responseCode = "503", description = "Driver service is unavailable")
     @PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
     @PostMapping("/{rideId}/assign")
     public RideResponse assignDriver(@AuthenticationPrincipal Jwt jwt,
                                      @Parameter(description = "The ride's id") @PathVariable String rideId,
+                                     @org.springframework.web.bind.annotation.RequestBody(required = false)
+                                     AssignDriverRequest request,
                                      @Parameter(hidden = true)
                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         // the passenger's token is forwarded to the Driver service
-        return rideService.assignDriver(rideId, jwt.getSubject(), role(jwt), authorization);
+        return rideService.assignDriver(rideId, jwt.getSubject(), role(jwt), authorization,
+                request == null ? null : request.driverId());
     }
 
     // ===================== 2. Driver =====================
