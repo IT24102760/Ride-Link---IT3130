@@ -1,0 +1,296 @@
+/* =========================================================
+   RideLink Swagger UI - premium dark theme
+   EDIT HERE: change these variables to restyle everything
+   ========================================================= */
+:root {
+    --rl-bg: #07111f;              /* page background */
+    --rl-bg-2: #0b1728;            /* page gradient end */
+    --rl-card: #0f1d30;            /* endpoint cards */
+    --rl-card-2: #13243b;          /* card hover / headers */
+    --rl-input: #060e19;           /* inputs and editors */
+    --rl-border: rgba(255, 255, 255, 0.08);
+    --rl-border-strong: rgba(255, 255, 255, 0.16);
+
+    --rl-text: #edf4ff;            /* main text */
+    --rl-muted: #8ea3bd;           /* secondary text */
+
+    --rl-primary: #36d399;         /* green: POST, authorize */
+    --rl-blue: #5ea7ff;            /* blue: GET, execute */
+    --rl-amber: #f6c85f;           /* PUT / PATCH */
+    --rl-red: #ff6b81;             /* DELETE, required */
+
+    --rl-radius: 14px;
+    --rl-font: Inter, "Segoe UI", -apple-system, sans-serif;
+    --rl-mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+}
+
+/* ---------- Page ---------- */
+body {
+    margin: 0;
+    background:
+            radial-gradient(circle at 12% 8%, rgba(54, 211, 153, 0.10), transparent 32%),
+            radial-gradient(circle at 88% 12%, rgba(94, 167, 255, 0.10), transparent 32%),
+            linear-gradient(135deg, var(--rl-bg), var(--rl-bg-2));
+    background-attachment: fixed;
+    color: var(--rl-text);
+    font-family: var(--rl-font);
+}
+.swagger-ui { font-family: var(--rl-font); color: var(--rl-text); }
+.swagger-ui .wrapper { max-width: 1180px; }
+
+/* ---------- Top bar ---------- */
+.swagger-ui .topbar {
+    background: rgba(5, 13, 24, 0.85);
+    border-bottom: 1px solid var(--rl-border);
+    backdrop-filter: blur(16px);
+    padding: 12px 0;
+}
+.swagger-ui .topbar .link img { display: none; }
+.swagger-ui .topbar .link::before { content: "🚗"; font-size: 24px; margin-right: 10px; }
+.swagger-ui .topbar .link::after {
+    content: "RideLink API";
+    color: var(--rl-text);
+    font-size: 19px;
+    font-weight: 700;
+}
+.swagger-ui .topbar .download-url-wrapper { display: none; }   /* hide the URL box */
+
+/* ---------- Title and description ---------- */
+.swagger-ui .info { margin: 36px 0 20px; }
+.swagger-ui .info .title { color: var(--rl-text); font-size: 32px; font-weight: 700; }
+.swagger-ui .info .title small {
+    background: rgba(54, 211, 153, 0.12);
+    border: 1px solid rgba(54, 211, 153, 0.3);
+    border-radius: 999px;
+    padding: 3px 10px;
+}
+.swagger-ui .info .title small pre { color: var(--rl-primary); }
+.swagger-ui .info .description,
+.swagger-ui .info .description p,
+.swagger-ui .markdown p { color: var(--rl-muted); font-size: 14px; line-height: 1.8; }
+.swagger-ui .markdown code,
+.swagger-ui .renderedMarkdown code {
+    background: rgba(94, 167, 255, 0.12);
+    color: var(--rl-blue);
+    border-radius: 6px;
+    padding: 2px 6px;
+}
+
+/* ---------- Servers + Authorize bar ---------- */
+.swagger-ui .scheme-container {
+    background: transparent;
+    box-shadow: none;
+    border-top: 1px solid var(--rl-border);
+    border-bottom: 1px solid var(--rl-border);
+}
+.swagger-ui .servers-title,
+.swagger-ui .scheme-container label { color: var(--rl-muted); }
+
+/* ---------- Search / filter box ---------- */
+.swagger-ui .filter-container { margin: 18px 0 0; }
+.swagger-ui .filter .operation-filter-input {
+    width: 100%;
+    margin: 0;
+}
+
+/* ---------- Section tags ("Rides") ---------- */
+.swagger-ui .opblock-tag {
+    color: var(--rl-text);
+    border-bottom: 1px solid var(--rl-border);
+    font-size: 20px;
+    padding: 16px 4px;
+}
+.swagger-ui .opblock-tag small { color: var(--rl-muted); }
+.swagger-ui .opblock-tag:hover { background: transparent; color: var(--rl-primary); }
+
+/* ---------- Endpoint cards (no movement while editing) ---------- */
+.swagger-ui .opblock {
+    background: var(--rl-card);
+    border: 1px solid var(--rl-border);
+    border-radius: var(--rl-radius);
+    margin: 0 0 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+}
+.swagger-ui .opblock:hover { border-color: var(--rl-border-strong); }
+.swagger-ui .opblock.is-open { border-color: var(--rl-border-strong); }
+
+.swagger-ui .opblock .opblock-summary { border: none; padding: 12px 14px; }
+.swagger-ui .opblock .opblock-summary-path,
+.swagger-ui .opblock .opblock-summary-path a { color: var(--rl-text); font-family: var(--rl-mono); }
+.swagger-ui .opblock .opblock-summary-description { color: var(--rl-muted); }
+
+.swagger-ui .opblock .opblock-summary-method {
+    border-radius: 8px;
+    min-width: 72px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-shadow: none;
+}
+
+/* Method colours */
+.swagger-ui .opblock.opblock-get    { border-left: 4px solid var(--rl-blue); }
+.swagger-ui .opblock.opblock-post   { border-left: 4px solid var(--rl-primary); }
+.swagger-ui .opblock.opblock-put,
+.swagger-ui .opblock.opblock-patch  { border-left: 4px solid var(--rl-amber); }
+.swagger-ui .opblock.opblock-delete { border-left: 4px solid var(--rl-red); }
+
+.swagger-ui .opblock.opblock-get    .opblock-summary-method { background: rgba(94, 167, 255, 0.18); color: var(--rl-blue); }
+.swagger-ui .opblock.opblock-post   .opblock-summary-method { background: rgba(54, 211, 153, 0.18); color: var(--rl-primary); }
+.swagger-ui .opblock.opblock-put    .opblock-summary-method,
+.swagger-ui .opblock.opblock-patch  .opblock-summary-method { background: rgba(246, 200, 95, 0.18); color: var(--rl-amber); }
+.swagger-ui .opblock.opblock-delete .opblock-summary-method { background: rgba(255, 107, 129, 0.18); color: var(--rl-red); }
+
+/* Icons (arrows, locks, copy) */
+.swagger-ui svg:not(:root) { fill: var(--rl-muted); }
+.swagger-ui .authorization__btn svg.locked { fill: var(--rl-primary); }
+
+/* ---------- Opened endpoint ---------- */
+.swagger-ui .opblock-body { background: rgba(4, 11, 20, 0.55); }
+.swagger-ui .opblock .opblock-section-header {
+    background: var(--rl-card-2);
+    box-shadow: none;
+    border-bottom: 1px solid var(--rl-border);
+}
+.swagger-ui .opblock .opblock-section-header h4,
+.swagger-ui .opblock-title_normal,
+.swagger-ui .opblock-description-wrapper p { color: var(--rl-text); }
+
+/* Parameter table */
+.swagger-ui table thead tr th,
+.swagger-ui table thead tr td { color: var(--rl-muted); border-bottom: 1px solid var(--rl-border); }
+.swagger-ui .parameter__name { color: var(--rl-text); font-family: var(--rl-mono); }
+.swagger-ui .parameter__name.required::after { color: var(--rl-red); }
+.swagger-ui .parameter__name.required span { color: var(--rl-red); }
+.swagger-ui .parameter__type,
+.swagger-ui .parameter__in { color: var(--rl-muted); font-family: var(--rl-mono); }
+
+/* ---------- Inputs and the request body editor ---------- */
+.swagger-ui input[type=text],
+.swagger-ui input[type=password],
+.swagger-ui input[type=search],
+.swagger-ui textarea,
+.swagger-ui select {
+    background: var(--rl-input) !important;
+    border: 1px solid var(--rl-border-strong) !important;
+    border-radius: 10px !important;
+    color: var(--rl-text) !important;
+    padding: 10px 12px !important;
+    outline: none;
+}
+.swagger-ui input:focus,
+.swagger-ui textarea:focus,
+.swagger-ui select:focus {
+    border-color: var(--rl-primary) !important;
+    box-shadow: 0 0 0 3px rgba(54, 211, 153, 0.15);
+}
+
+/* Big, readable JSON editor for request bodies */
+.swagger-ui textarea.body-param__text,
+.swagger-ui .body-param textarea {
+    min-height: 260px;
+    font-family: var(--rl-mono) !important;
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    resize: vertical;
+}
+
+/* ---------- Buttons ---------- */
+.swagger-ui .btn {
+    border-radius: 10px !important;
+    border: 1px solid var(--rl-border-strong) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--rl-text) !important;
+    font-weight: 700;
+    box-shadow: none !important;
+}
+.swagger-ui .btn:hover { background: rgba(255, 255, 255, 0.1) !important; }
+
+/* "Try it out" / "Cancel" */
+.swagger-ui .try-out__btn { border-color: var(--rl-blue) !important; color: var(--rl-blue) !important; }
+.swagger-ui .try-out__btn.cancel { border-color: var(--rl-red) !important; color: var(--rl-red) !important; }
+
+/* Execute: the main action, easy to find */
+.swagger-ui .btn.execute {
+    background: linear-gradient(135deg, var(--rl-blue), #3b82f6) !important;
+    border: none !important;
+    color: #03101f !important;
+    padding: 12px !important;
+    font-size: 15px;
+}
+.swagger-ui .btn.execute:hover { filter: brightness(1.1); }
+
+/* Authorize */
+.swagger-ui .btn.authorize {
+    background: linear-gradient(135deg, var(--rl-primary), #18a878) !important;
+    border: none !important;
+    color: #03140e !important;
+    padding: 9px 18px !important;
+}
+.swagger-ui .btn.authorize svg { fill: #03140e; }
+
+/* ---------- Responses ---------- */
+.swagger-ui .responses-inner h4,
+.swagger-ui .responses-inner h5 { color: var(--rl-text); }
+.swagger-ui .response-col_status { color: var(--rl-text); font-weight: 800; font-family: var(--rl-mono); }
+.swagger-ui .response-col_description,
+.swagger-ui .response-col_links { color: var(--rl-muted); }
+.swagger-ui .request-url pre,
+.swagger-ui .curl-command .curl { font-family: var(--rl-mono) !important; }
+.swagger-ui .responses-inner .request-duration { color: var(--rl-primary); }
+
+/* Code blocks (response body, curl, examples) */
+.swagger-ui .highlight-code,
+.swagger-ui .microlight,
+.swagger-ui pre.microlight {
+    background: #040a13 !important;
+    border: 1px solid var(--rl-border);
+    border-radius: 10px;
+    color: #d8e6f5 !important;
+    font-family: var(--rl-mono) !important;
+    font-size: 13px !important;
+}
+
+/* Example value / Schema tabs */
+.swagger-ui .tab li { color: var(--rl-muted); }
+.swagger-ui .tab li.active { color: var(--rl-text); }
+.swagger-ui .tab li button.tablinks { color: inherit; }
+
+/* ---------- Authorize dialog ---------- */
+.swagger-ui .dialog-ux .modal-ux {
+    background: #0c1828;
+    border: 1px solid var(--rl-border-strong);
+    border-radius: 18px;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+}
+.swagger-ui .dialog-ux .modal-ux-header { border-bottom: 1px solid var(--rl-border); }
+.swagger-ui .dialog-ux .modal-ux-header h3,
+.swagger-ui .dialog-ux .modal-ux-content h4,
+.swagger-ui .dialog-ux .modal-ux-content p,
+.swagger-ui .dialog-ux .modal-ux-content label { color: var(--rl-text); }
+
+/* ---------- Schemas ---------- */
+.swagger-ui section.models {
+    background: var(--rl-card);
+    border: 1px solid var(--rl-border);
+    border-radius: var(--rl-radius);
+}
+.swagger-ui section.models h4,
+.swagger-ui section.models h4 span,
+.swagger-ui .model-title { color: var(--rl-text); }
+.swagger-ui .model-box { background: rgba(255, 255, 255, 0.03); border-radius: 10px; }
+.swagger-ui .model,
+.swagger-ui .model .property,
+.swagger-ui .prop-format { color: #a9bad0; }
+.swagger-ui .prop-type { color: var(--rl-blue); }
+.swagger-ui .model .property.primitive { color: var(--rl-muted); }
+
+/* ---------- Links and scrollbar ---------- */
+.swagger-ui a { color: var(--rl-blue); }
+.swagger-ui a:hover { color: var(--rl-primary); }
+
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: #050c15; }
+::-webkit-scrollbar-thumb { background: #1d344d; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #2b4b6b; }

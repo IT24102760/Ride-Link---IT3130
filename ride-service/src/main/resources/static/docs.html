@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RideLink Ride Service API</title>
+    <!-- Swagger UI's own styles first, then yours so they override it -->
+    <link rel="stylesheet" href="/swagger-ui/swagger-ui.css">
+    <link rel="stylesheet" href="/swagger-custom.css">
+</head>
+<body>
+<div id="swagger-ui"></div>
+
+<!-- Swagger UI's scripts, served by springdoc -->
+<script src="/swagger-ui/swagger-ui-bundle.js"></script>
+<script src="/swagger-ui/swagger-ui-standalone-preset.js"></script>
+<script>
+    // Load our API description and draw the page
+    window.ui = SwaggerUIBundle({
+        url: "/v3/api-docs",
+        dom_id: "#swagger-ui",
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        layout: "StandaloneLayout",   // includes the top bar your CSS styles
+        persistAuthorization: true    // keeps your token after a page refresh
+    });
+</script>
+</body>
+</html>
