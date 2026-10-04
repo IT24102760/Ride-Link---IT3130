@@ -1,0 +1,24 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: account-service
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://localhost:27017/ridelink_accounts}
+  data:
+    mongodb:
+      auto-index-creation: true    # makes the unique email index work
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}          # same secret as every other service
+    expiry-minutes: 120            # token lifetime
+  admin:
+    email: ${ADMIN_EMAIL:}         # optional: first admin account, created at startup
+    password: ${ADMIN_PASSWORD:}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha             # 1. Authentication, 2. My account, 3. Admin
