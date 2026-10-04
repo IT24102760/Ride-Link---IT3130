@@ -1,0 +1,89 @@
+name: RideLink CI
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build & test ${{ matrix.service }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - account-service
+          - driver-vehicle-service
+          - ride-service
+          - fare-payment-service
+
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping: 1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # Dummy values used ONLY by the CI test run. They are not the real secrets
+    # used when running the system; those live in local.env, which is never committed.
+    env:
+      JWT_SECRET: ci-only-dummy-jwt-secret-0123456789abcdef
+      INTERNAL_SERVICE_KEY: ci-only-dummy-internal-key
+      ADMIN_EMAIL: admin@ci.ridelink.test
+      ADMIN_PASSWORD: CiOnlyDummy123!
+      SPRING_DATA_MONGODB_URI: mongodb://localhost:27017/${{ matrix.service }}-ci
+      SPRING_MONGODB_URI: mongodb://localhost:27017/${{ matrix.service }}-ci
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.service }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check service folder exists
+        id: check
+        working-directory: .
+        run: |
+          if [ -f "${{ matrix.service }}/pom.xml" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::${{ matrix.service }} is not on this branch yet - skipping"
+          fi
+
+      - name: Set up JDK 21
+        if: steps.check.outputs.exists == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: ${{ matrix.service }}/pom.xml
+
+      - name: Build and run tests
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          if [ -f mvnw ]; then
+            chmod +x mvnw
+            ./mvnw -B clean verify
+          else
+            mvn -B clean verify
+          fi
+
+      - name: Upload test reports
+        if: always() && steps.check.outputs.exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ matrix.service }}
+          path: ${{ matrix.service }}/target/surefire-reports/
+          if-no-files-found: warn
